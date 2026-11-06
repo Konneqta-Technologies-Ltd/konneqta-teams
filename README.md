@@ -1,32 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Konneqta Teams
 
-## Getting Started
+The standalone web app for creating and managing Konneqta team workspaces. It
+uses the same Supabase project as Konneqta so a person can use one account for
+their personal profile and organization memberships.
 
-First, run the development server:
+## Local setup
 
-```bash
+1. Install dependencies with `pnpm install`.
+2. Copy `.env.example` to `.env.local`.
+3. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   to the values from the **same Supabase project used by Konneqta**. The key
+   is a public/publishable key; never put a service-role key in this app.
+4. In Supabase **Authentication → URL Configuration → Redirect URLs**, add
+   both callback URLs:
+   - `http://localhost:3001/auth/callback`
+   - `https://teams.konneqta.com/auth/callback`
+5. In **Authentication → Sign In / Providers → Google**, enable Google. In the
+   Google Cloud OAuth client, add the Supabase callback URL shown by Supabase
+   as an authorized redirect URI. Google should return to Supabase; Supabase
+   then returns to the Teams callback above.
+6. Start the app with `pnpm dev` (this project runs on port `3001`).
 
-pnpm dev
+Keep the Supabase **Site URL** set to the existing Konneqta production URL.
+Teams passes its own callback URL during sign-in. If that callback is missing
+from Supabase's **Redirect URLs** allowlist, Supabase may fall back to its Site
+URL, which sends the Google response to the Konneqta homepage instead of this
+app. After adding the callback URLs, try Google sign-in again from
+`http://localhost:3001`.
 
-```
+The local Supabase values can be found in Konneqta's existing `.env.local`.
+Never commit `.env.local` or put a service-role key in this app.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The copied organization setup SQL and signup flow are still being integrated.
+Do not run a second schema setup against Supabase until you have checked whether
+the organization tables and `create_organization_for_current_user` function
+already exist in the shared project.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
