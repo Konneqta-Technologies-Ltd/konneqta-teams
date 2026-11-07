@@ -31,10 +31,20 @@ app. After adding the callback URLs, try Google sign-in again from
 The local Supabase values can be found in Konneqta's existing `.env.local`.
 Never commit `.env.local` or put a service-role key in this app.
 
-The copied organization setup SQL and signup flow are still being integrated.
-Do not run a second schema setup against Supabase until you have checked whether
-the organization tables and `create_organization_for_current_user` function
-already exist in the shared project.
+## Shared Supabase database
+
+The Teams workspace tables live in the same Supabase project as Konneqta. If
+the `organizations` and `organization_memberships` tables and
+`create_organization_for_current_user` function already exist, apply only
+`supabase/functions/teams-organization-settings.sql` in the SQL Editor to
+enable workspace settings updates. This update adds a permission-checked
+function; it does not drop tables, policies, or data.
+
+Use `supabase/functions/teams-setup.sql` only when setting up the Teams schema
+for a project that does not already have it, then apply the settings update
+script above. Do not rerun the full setup script just to add settings support;
+it recreates policies and may trigger Supabase's destructive-operation warning
+even though it does not delete workspace data.
 
 ## Checks
 

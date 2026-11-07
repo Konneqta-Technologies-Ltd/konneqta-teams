@@ -37,6 +37,10 @@ type OrganizationResult = {
   slug: string;
 };
 
+type CreatedOrganization = OrganizationResult & {
+  origin: string;
+};
+
 function slugifyOrganizationName(value: string) {
   return value
     .toLowerCase()
@@ -73,7 +77,7 @@ export default function TeamSignupWizard() {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [createdOrganization, setCreatedOrganization] =
-    useState<OrganizationResult | null>(null);
+    useState<CreatedOrganization | null>(null);
 
   const inputClassName =
     'w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-(--main-orange) focus:outline-none focus:ring-1 focus:ring-(--main-orange)';
@@ -240,7 +244,10 @@ export default function TeamSignupWizard() {
         );
       }
 
-      setCreatedOrganization(result.organization);
+      setCreatedOrganization({
+        ...result.organization,
+        origin: window.location.origin,
+      });
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -282,22 +289,29 @@ export default function TeamSignupWizard() {
           </p>
           <div className="mt-8 rounded-xl border border-zinc-700 bg-zinc-950 p-4 text-left">
             <p className="text-xs uppercase tracking-wide text-zinc-500">
-              Chosen workspace address
+              Team dashboard
             </p>
             <p className="mt-1 break-all font-medium">
-              teams.konneqta.com/{createdOrganization.slug}
+              {`${createdOrganization.origin}/${createdOrganization.slug}`}
             </p>
           </div>
           <p className="mt-5 text-sm text-zinc-400">
-            The team dashboard, member management, and live workspace page are
-            the next part of the Teams rollout.
+            Your team workspace is ready. Open its dashboard to continue setup.
           </p>
-          <Link
-            href="/"
-            className="mt-8 inline-flex rounded-full bg-(--main-orange) px-6 py-3 font-semibold text-white hover:opacity-90"
-          >
-            Return to Konneqta
-          </Link>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              href={`/${createdOrganization.slug}`}
+              className="inline-flex justify-center rounded-full bg-(--main-orange) px-6 py-3 font-semibold text-white transition hover:brightness-110"
+            >
+              Go to team dashboard
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex justify-center rounded-full bg-zinc-800 px-6 py-3 font-semibold text-white transition hover:bg-zinc-700"
+            >
+              Back to Teams home
+            </Link>
+          </div>
         </section>
       </main>
     );

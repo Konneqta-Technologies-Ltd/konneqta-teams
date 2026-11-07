@@ -27,6 +27,7 @@ async function LoginForm({
       mode="login"
       nextPath={getSafeRedirectPath(query.next)}
       showCallbackError={query.error === 'callback'}
+      showWorkspaceError={query.error === 'workspace'}
     />
   );
 }

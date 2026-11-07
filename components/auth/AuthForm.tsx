@@ -12,10 +12,12 @@ export default function AuthForm({
   mode,
   nextPath,
   showCallbackError = false,
+  showWorkspaceError = false,
 }: {
   mode: AuthMode;
   nextPath: string;
   showCallbackError?: boolean;
+  showWorkspaceError?: boolean;
 }) {
   const isSignup = mode === 'signup';
   const [email, setEmail] = useState('');
@@ -27,6 +29,12 @@ export default function AuthForm({
   const inputClassName =
     'mt-2 w-full rounded-xl border border-[#303030] bg-[#171717] px-4 py-3 text-white placeholder:text-zinc-500 outline-none transition focus:border-(--main-orange) focus:ring-2 focus:ring-(--main-orange)/20';
   const linkedAuthPath = `/auth/${isSignup ? 'login' : 'signup'}?next=${encodeURIComponent(nextPath)}`;
+
+  const getContinueUrl = () => {
+    const continueUrl = new URL('/auth/continue', window.location.origin);
+    continueUrl.searchParams.set('next', nextPath);
+    return continueUrl.toString();
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -69,7 +77,7 @@ export default function AuthForm({
         if (authError) throw authError;
       }
 
-      window.location.assign(nextPath);
+      window.location.assign(getContinueUrl());
     } catch (authError) {
       setError(
         authError instanceof Error
@@ -132,6 +140,11 @@ export default function AuthForm({
         {showCallbackError && (
           <p role="alert" className="mt-5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
             The confirmation link could not be completed. Try signing in again or request a new link.
+          </p>
+        )}
+        {showWorkspaceError && (
+          <p role="alert" className="mt-5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            We could not load the workspace linked to this account. Please try again.
           </p>
         )}
         {error && (

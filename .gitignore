@@ -50,6 +50,9 @@ next-env.d.ts
 posthog-warehouse-report.md
 
 /supabase
+!/supabase/
+!/supabase/functions/
+!/supabase/functions/teams-organization-settings.sql
 
 Konneqt1.docx
 
